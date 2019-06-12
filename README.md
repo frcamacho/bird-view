@@ -1,2 +1,2 @@
 # bird-view
-Tracking and analyzing Bird scooter locations across Los Angeles, CA
+Tracking and analyzing Bird scooter locations across Santa Monica, CA
