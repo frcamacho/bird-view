@@ -24,7 +24,8 @@ def createCSV():
             try:
                 json_bird_df = createDF(json_f_data)
                 json_bird_df = json_bird_df.rename(columns = {'id':'bird_id'})
-                bird_data_list.append(json_bird_df)
+                clean_bird_df = json_bird_df.drop(columns=['captive', 'code'])
+                bird_data_list.append(clean_bird_df)
             except ValueError: # no data for scooters, scooters are offline 
                 continue
     bird_data = pd.concat(bird_data_list, axis=0)
