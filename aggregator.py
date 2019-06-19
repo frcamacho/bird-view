@@ -1,7 +1,6 @@
 import requests 
 import uuid
 import json 
-import pandas as pd
 import datetime
 import os 
 
