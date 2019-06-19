@@ -1,2 +1,2 @@
 # bird-view
-Tracking and analyzing Bird scooter locations across Santa Monica, CA
+Tracking and predicting Bird e-scooter pick-up locations across Santa Monica, CA
