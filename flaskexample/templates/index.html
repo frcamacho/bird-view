@@ -1,12 +1,12 @@
+<!DOCTYPE html>
 <html>
-	<head>
-  		<link href="{{ url_for('static', filename='static/css/main.css') }}" rel="stylesheet">
-	</head>
-	<body>
+<head>
+</head>
+<body>
 <!-- Vertical navbar -->
 <div class="vertical-nav bg-white" id="sidebar">
   <div class="py-4 px-3 mb-4 bg-light">
-    <div class="media d-flex align-items-center"><img src="avatar.png" alt="..." width="65" class="mr-3 rounded-circle img-thumbnail shadow-sm">
+    <div class="media d-flex align-items-center"><img src="static/img/avatar.png" alt="..." width="65" class="mr-3 rounded-circle img-thumbnail shadow-sm">
       <div class="media-body">
         <h4 class="m-0">Francine Camacho</h4>
         <p class="font-weight-light text-muted mb-0">Data Scientist</p>
@@ -95,5 +95,23 @@
 
 </div>
 <!-- End content -->
-	</body>	
+	</body>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+
+	<!-- jQuery library -->
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+
+	<!-- Latest compiled JavaScript -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"></script>
+
+	<script type="text/javascript">
+		$(function() {
+			  // Sidebar toggle behavior
+			  $('#sidebarCollapse').on('click', function() {
+			    $('#sidebar, #content').toggleClass('active');
+			  });
+			});
+	</script>
+	<link href="static/css/styles.css" rel="stylesheet">
 </html>

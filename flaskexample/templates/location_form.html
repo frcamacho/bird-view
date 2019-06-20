@@ -1,5 +1,18 @@
 <!DOCTYPE html>
 <html>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
@@ -35,16 +48,44 @@ input[type=submit]:hover {
   background-color: #f2f2f2;
   padding: 20px;
 }
+
 </style>
+<style>
+       /* Set the size of the div element that contains the map */
+      #map {
+        height: 400px;  /* The height is 400 pixels */
+        width: 100%;  /* The width is the width of the web page */
+       }
+</style>
+
 </head>
 <body>
 
-<h3>Predict Bird pickups</h3>
+<h3>Predict the number of Bird e-scooter pickups</h3>
 
 <div class="container">
-  <form action="/action_page.php">
-    <label for="Day"> Day</label>
-    <select id="Day" name="Day">
+  <form onsubmit="predict();return false;">
+    <label for="day">Day</label>
+    <div class="row">
+        <div class='col-sm-6'>
+            <div class="form-group">
+                <div class='input-group date' id='datetimepicker3'>
+                    <input id="day" type='text' class="form-control" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $(function () {
+                $('#datetimepicker3').datetimepicker({
+                    format: "MM/DD/YYYY"
+                })
+            });
+        </script>
+    </div>
+    <!-- <select id="day" name="day">
       <option value="Sunday">Sunday</option>
       <option value="Monday">Monday</option>
       <option value="Tuesday">Tuesday</option>
@@ -52,18 +93,111 @@ input[type=submit]:hover {
       <option value="Thursday">Thursday</option>
       <option value="Friday">Friday</option>
       <option value="Saturday">Saturday</option>
-    </select>
+    </select> -->
 
     <label for="time">Select a time:</label>
-  	<input type="time" name="time">
+    <input id="time" type="time" name="time">
 
-  	<input type="text" class="form-control" placeholder="Input search area..." aria-label="Location" aria-describedby="basic-addon1">
+    <input id="pac-input" name="location" type="text" class="form-control" placeholder="Input search area..." aria-label="Location" aria-describedby="basic-addon1">
     <input type="submit" value="Submit">
 
   </form>
 </div>
-  </form>
-</div>
+
+<!--The div element for the map -->
+    <div id="map"></div>
+    <script>
+    // Initialize and add the map
+    function initAutocomplete() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 34.024212, lng: -118.496475},
+          zoom: 13,
+          mapTypeId: 'roadmap'
+        });
+
+        // Create the search box and link it to the UI element.
+        var input = document.getElementById('pac-input');
+        var searchBox = new google.maps.places.SearchBox(input);
+        // map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        // Bias the SearchBox results towards current map's viewport.
+        map.addListener('bounds_changed', function() {
+          searchBox.setBounds(map.getBounds());
+        });
+
+        var markers = [];
+        // Listen for the event fired when the user selects a prediction and retrieve
+        // more details for that place.
+        searchBox.addListener('places_changed', function() {
+          var places = searchBox.getPlaces();
+
+          if (places.length == 0) {
+            return;
+          }
+
+          // Clear out the old markers.
+          markers.forEach(function(marker) {
+            marker.setMap(null);
+          });
+          markers = [];
+
+          // For each place, get the icon, name and location.
+          var bounds = new google.maps.LatLngBounds();
+          places.forEach(function(place) {
+            if (!place.geometry) {
+              console.log("Returned place contains no geometry");
+              return;
+            }
+            var icon = {
+              url: place.icon,
+              size: new google.maps.Size(71, 71),
+              origin: new google.maps.Point(0, 0),
+              anchor: new google.maps.Point(17, 34),
+              scaledSize: new google.maps.Size(25, 25)
+            };
+
+            // Create a marker for each place.
+            markers.push(new google.maps.Marker({
+              map: map,
+              icon: icon,
+              title: place.name,
+              position: place.geometry.location
+            }));
+
+            if (place.geometry.viewport) {
+              // Only geocodes have viewport.
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+          });
+          map.fitBounds(bounds);
+        });
+      }
+
+    </script>
+    <!--Load the API from the specified URL
+    * The async attribute allows the browser to render the page while the API loads
+    * The key parameter will contain your own API key (which is not needed for this tutorial)
+    * The callback parameter executes the initMap() function
+    -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDqoIdz9z4_JwerQJgtqDMKqYPl0SAsr_w&libraries=places&callback=initAutocomplete"
+         async defer></script>
+    <script type="text/javascript"> 
+        function predict(){
+            const day = document.getElementById('day').value;
+            const time = document.getElementById('time').value;
+            const location = document.getElementById('pac-input').value;
+            const hostname = window.location.hostname;
+            const endpoint = `/predict-birds?day=${day}&time=${time}&location=${location}`;
+            fetch(`${endpoint}`)
+            .then((res) => {
+                // Update the map with coordinates for scooters
+                console.log(res)
+            })
+            .catch((err) => {console.log(err)});
+        }
+    </script>
 
 </body>
 </html>
