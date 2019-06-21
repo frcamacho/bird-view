@@ -8,6 +8,7 @@ import logging
 import requests
 import datetime
 import joblib
+import os 
 
 
 @app.route('/predict-birds')
@@ -26,9 +27,12 @@ def predict():
     data_query['latitude'] = data_query['geohash'].apply(lambda geo: decodegeo(geo, 0))
     data_query['longitude'] = data_query['geohash'].apply(lambda geo: decodegeo(geo, 1))
     data_query = data_query.drop(['geohash', 'timestamp'], axis=1)
+    total_scooters = runModel(data_query)
+    total_scooters = '%.1f' % total_scooters
+    print(data_query , file=sys.stderr)
     # Return something like:
     # {"lat": 100, "lng": -100, "total_scooters": 19}
-    return jsonify({"HELLO": 23434})
+    return jsonify({"total_scooters": total_scooters, "origin": {"lat": lat, "lng": lng}})
 
 def getCoordinates(json):
     lat = json["results"][0]["geometry"]["location"]["lat"]
@@ -57,10 +61,10 @@ def convertTimeStamp(df):
     df['minute'] = df.timestamp.apply(lambda x: x.minute)
     return df
 
-# def runModel(df):
-#     pipe = joblib.load('finalized_model.sav')
-#     total_num_scooters = pipe.predict(df)[0]
-#     return df 
+def runModel(df):
+    pipe = joblib.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'model', 'finalized_model.sav'))
+    total_num_scooters = pipe.predict(df)[0]
+    return total_num_scooters 
 
     #Get form data 
     #1. convert address to coordinate using geolocation API 
