@@ -9,6 +9,6 @@ def home():
 def map_data():
     return render_template('heatmap_santamonica_bird.html')
 
-@app.route('/search')
-def search():
+@app.route('/BirdView')
+def BirdView():
     return render_template('location_form.html')
