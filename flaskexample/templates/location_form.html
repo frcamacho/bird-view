@@ -12,6 +12,7 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+<script src="static/js/latlon-geohash.js"></script>
 
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -185,26 +186,50 @@ input[type=submit]:hover {
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDqoIdz9z4_JwerQJgtqDMKqYPl0SAsr_w&libraries=places&callback=initAutocomplete"
          async defer></script>
     <script type="text/javascript"> 
+        var marker;
+        var polygon;
         function predict(){
             const day = document.getElementById('day').value;
             const time = document.getElementById('time').value;
             const location = document.getElementById('pac-input').value;
             const hostname = window.location.hostname;
             const endpoint = `/predict-birds?day=${day}&time=${time}&location=${location}`;
-            var markers = [];
             fetch(`${endpoint}`)
             .then((response) => response.json())
             .then((res) => {
                 // Update the map with coordinates for scooters
                 const origin = res.origin;
-                markers.forEach((marker) => {
+                if (typeof marker !== 'undefined') { 
                   marker.setMap(null);
-                });
-                const scootersMarker = new google.maps.Marker({
+                  marker = undefined
+                }
+                
+                if (typeof polygon !== 'undefined') {
+                  polygon.setMap(null);
+                  polygon = undefined;
+                }
+                
+                marker = new google.maps.Marker({
                                         map: map,
                                         label: `${res.total_scooters} Scooters`,
                                         position: origin
                                       });
+
+                const {sw,ne} = Geohash.bounds(res.geohash)
+                polygon = new google.maps.Rectangle({
+                  strokeColor: '#FF0000',
+                  strokeOpacity: 0.8,
+                  strokeWeight: 2,
+                  fillColor: '#FF0000',
+                  fillOpacity: 0.35,
+                  map: map,
+                  bounds: {
+                    north: ne.lat,
+                    south: sw.lat,
+                    east:  ne.lon,
+                    west:  sw.lon
+                  }
+                });
             })
             .catch((err) => {console.log(err)});
         }

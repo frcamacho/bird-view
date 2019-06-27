@@ -22,6 +22,7 @@ def predict():
     data = {'day_of_week':[day_of_week], 'latitude':[lat], 'longitude':[lng], 'timestamp':[time]}
     data_query = pd.DataFrame(data) 
     data_query = getGeohash(data_query)
+    location_geohash = data_query['geohash'].values[0]
     data_query = checkIfWeekend(data_query)
     data_query = convertTimeStamp(data_query)
     data_query['latitude'] = data_query['geohash'].apply(lambda geo: decodegeo(geo, 0))
@@ -32,7 +33,7 @@ def predict():
     print(data_query , file=sys.stderr)
     # Return something like:
     # {"lat": 100, "lng": -100, "total_scooters": 19}
-    return jsonify({"total_scooters": total_scooters, "origin": {"lat": lat, "lng": lng}})
+    return jsonify({"total_scooters": total_scooters, "origin": {"lat": lat, "lng": lng}, "geohash":location_geohash})
 
 def getCoordinates(json):
     lat = json["results"][0]["geometry"]["location"]["lat"]
