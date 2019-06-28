@@ -1,0 +1,10 @@
+# ignore folder data files 
+
+responses/
+
+#ignore data csv
+*.csv
+
+# ignore specific files with API keys 
+
+flaskexample/templates/location_form.html 
