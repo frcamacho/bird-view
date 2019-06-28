@@ -5,7 +5,9 @@ RUN apt-get install -y python3 python3-dev python3-pip nginx
 
 RUN pip3 install uwsgi
 
-COPY . /bird-view
+COPY flaskexample/ /bird-view/flaskexample/
+COPY requirements.txt /bird-view
+COPY run.py /bird-view
 WORKDIR /bird-view
 
 RUN pip3 install -r requirements.txt
